@@ -1,0 +1,5 @@
+# Mac files
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
