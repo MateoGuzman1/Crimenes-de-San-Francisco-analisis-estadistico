@@ -14,3 +14,8 @@ venv/
 
 # MLflow local
 mlruns/
+
+# Local venvs + packaging artifacts
+.sf-venv/
+.venv/
+*.egg-info/
