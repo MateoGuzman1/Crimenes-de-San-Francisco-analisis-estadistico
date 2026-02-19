@@ -22,3 +22,6 @@ package-dir = {"" = "package-src"}
 
 [tool.setuptools.packages.find]
 where = ["package-src"]
+
+[project.scripts]
+sfcrime-train = "sfcrime_model.train:main"
