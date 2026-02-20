@@ -1,0 +1,18 @@
+import streamlit as st
+
+def render_top_nav() -> str:
+    # Simula los dos botones en la esquina superior derecha
+    # Usamos tabs para simplificar la navegación.
+    tabs = st.tabs(["Clasificador", "Información"])
+    # Hack simple: detectamos cuál tab está “activo” por interacción de usuario.
+    # Streamlit no expone tab activo directamente; devolvemos por session_state.
+    # Alternativa: separar en pages/, pero esto mantiene un solo Home.py.
+    if "active_tab" not in st.session_state:
+        st.session_state["active_tab"] = "Clasificador"
+
+    with tabs[0]:
+        st.session_state["active_tab"] = "Clasificador"
+    with tabs[1]:
+        st.session_state["active_tab"] = "Información"
+
+    return st.session_state["active_tab"]
