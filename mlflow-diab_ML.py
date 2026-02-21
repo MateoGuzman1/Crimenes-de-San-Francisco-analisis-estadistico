@@ -138,12 +138,42 @@ X_test = transform_data(X_test_df)
 # =========================================
 # MODELS
 # =========================================
+
 models = {
-    "LogisticRegression": LogisticRegression(max_iter=2000),
-    "RandomForest": RandomForestClassifier(n_estimators=200, max_depth=10),
-    "DecisionTree": DecisionTreeClassifier(),
-    "XGBoost": xgb.XGBClassifier(eval_metric='mlogloss'),
-    "LightGBM": lgb.LGBMClassifier()
+#        "LogisticRegression": LogisticRegression(
+#        max_iter=3000,
+#        multi_class="ovr",
+#        solver="lbfgs",
+#        C=1.0,
+#        penalty="l2",
+#        n_jobs=-1
+#    ) 
+  # ,
+
+  #  "RandomForest": RandomForestClassifier(
+  #      n_estimators=10,
+   #     max_depth=10,
+  #      min_samples_split=5,
+  #      min_samples_leaf=2,
+ #       max_features="sqrt",
+#        bootstrap=True
+#,
+  #      n_jobs=-1,
+   #     random_state=42
+   # )
+# ,
+
+     "DecisionTree": DecisionTreeClassifier(
+        max_depth=15,
+        min_samples_split=10,
+        min_samples_leaf=4,
+        criterion="gini",
+        splitter="best",
+        random_state=42
+    )
+
+ #   "XGBoost": xgb.XGBClassifier(eval_metric='mlogloss'),
+ #   "LightGBM": lgb.LGBMClassifier()
 }
 
 
