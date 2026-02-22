@@ -3,24 +3,21 @@
 
 import pandas as pd
 import numpy as np
+from scipy import sparse
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, recall_score, f1_score, roc_auc_score
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 
-import xgboost as xgb
-import lightgbm as lgb
-
 import mlflow
 import mlflow.sklearn
-import mlflow.xgboost
-import mlflow.lightgbm
 
 RANDOM_STATE = 42
+
 
 # =========================================
 # FEATURE ENGINEERING
@@ -67,8 +64,7 @@ def feature_engineer(df):
 # MLFLOW CONFIG
 # =========================================
 mlflow.set_tracking_uri("sqlite:///mlflow.db")
-
-experiment = mlflow.set_experiment("SF-Crimes-MultiModel-FE")
+experiment = mlflow.set_experiment("SF-Crimes-Binary")
 experiment_id = experiment.experiment_id
 
 
@@ -83,16 +79,24 @@ test_fe = feature_engineer(test_df)
 
 
 # =========================================
-# TARGET ENCODING
+# TARGET BINARY ENCODING (CORRECT 🔥)
+# NON-CRIMINAL = 0
+# RESTO = 1
 # =========================================
-le = LabelEncoder()
-y = le.fit_transform(train_fe['Category'])
+y = np.where(
+    train_fe['Category'] == "NON-CRIMINAL",
+    0,
+    1
+).astype(int)
 
 
 # =========================================
 # FEATURES
 # =========================================
-categorical_cols = ['DayOfWeek','PdDistrict','IsWeekend','IsIntersection','HasBlockWord']
+categorical_cols = [
+    'DayOfWeek','PdDistrict',
+    'IsWeekend','IsIntersection','HasBlockWord'
+]
 
 numeric_cols = [
     'Year','Month','Day','Hour','Minute',
@@ -117,7 +121,7 @@ X_test_df = test_fe[categorical_cols + numeric_cols]
 
 
 # =========================================
-# PREPROCESSING
+# PREPROCESSING (MEMORY SAFE)
 # =========================================
 ohe = OneHotEncoder(handle_unknown='ignore')
 scaler = StandardScaler()
@@ -126,9 +130,9 @@ ohe.fit(X_train_df[categorical_cols])
 scaler.fit(X_train_df[numeric_cols])
 
 def transform_data(df):
-    X_cat = ohe.transform(df[categorical_cols]).toarray()
+    X_cat = ohe.transform(df[categorical_cols])
     X_num = scaler.transform(df[numeric_cols])
-    return np.hstack([X_cat, X_num]).astype(np.float32)
+    return sparse.hstack([X_cat, X_num]).astype(np.float32)
 
 X_train = transform_data(X_train_df)
 X_val = transform_data(X_val_df)
@@ -138,42 +142,30 @@ X_test = transform_data(X_test_df)
 # =========================================
 # MODELS
 # =========================================
-
 models = {
-#        "LogisticRegression": LogisticRegression(
-#        max_iter=3000,
-#        multi_class="ovr",
-#        solver="lbfgs",
-#        C=1.0,
-#        penalty="l2",
-#        n_jobs=-1
-#    ) 
-  # ,
+    "LogisticRegression_bin": LogisticRegression(
+        max_iter=1500,
+        solver="liblinear",
+        C=0.7,
+        class_weight="balanced",
+        n_jobs=1
+    ),
 
-  #  "RandomForest": RandomForestClassifier(
-  #      n_estimators=10,
-   #     max_depth=10,
-  #      min_samples_split=5,
-  #      min_samples_leaf=2,
- #       max_features="sqrt",
-#        bootstrap=True
-#,
-  #      n_jobs=-1,
-   #     random_state=42
-   # )
-# ,
+    "RandomForest_bin": RandomForestClassifier(
+        n_estimators=150,
+        max_depth=10,
+        min_samples_leaf=3,
+        class_weight="balanced",
+        n_jobs=1,
+        random_state=42
+    ),
 
-     "DecisionTree": DecisionTreeClassifier(
-        max_depth=15,
-        min_samples_split=10,
+    "DecisionTree_bin": DecisionTreeClassifier(
+        max_depth=12,
         min_samples_leaf=4,
-        criterion="gini",
-        splitter="best",
+        class_weight="balanced",
         random_state=42
     )
-
- #   "XGBoost": xgb.XGBClassifier(eval_metric='mlogloss'),
- #   "LightGBM": lgb.LGBMClassifier()
 }
 
 
@@ -181,7 +173,6 @@ models = {
 # TRAINING + TRACKING
 # =========================================
 best_score = 0
-best_model_name = None
 best_model_object = None
 
 for model_name, model in models.items():
@@ -196,51 +187,47 @@ for model_name, model in models.items():
         y_pred = model.predict(X_val)
 
         if hasattr(model, "predict_proba"):
-            y_prob = model.predict_proba(X_val)
-            auc = roc_auc_score(y_val, y_prob, multi_class="ovr")
+            y_prob = model.predict_proba(X_val)[:,1]
+            auc = roc_auc_score(y_val, y_prob)
         else:
             auc = 0
 
         accuracy = accuracy_score(y_val, y_pred)
-        recall = recall_score(y_val, y_pred, average='weighted')
-        f1 = f1_score(y_val, y_pred, average='weighted')
+        recall = recall_score(y_val, y_pred)
+        f1 = f1_score(y_val, y_pred)
 
         mlflow.log_metric("accuracy", accuracy)
         mlflow.log_metric("recall", recall)
         mlflow.log_metric("f1", f1)
         mlflow.log_metric("auc", auc)
 
-        # Log model
-        if model_name == "XGBoost":
-            mlflow.xgboost.log_model(model, "model")
-        elif model_name == "LightGBM":
-            mlflow.lightgbm.log_model(model, "model")
-        else:
-            mlflow.sklearn.log_model(model, "model")
+        mlflow.sklearn.log_model(model, "model")
 
-        # Best model tracking
         if accuracy > best_score:
             best_score = accuracy
-            best_model_name = model_name
             best_model_object = model
 
         print(f"{model_name} → accuracy {accuracy:.4f}")
 
 
-print(f"Best model = {best_model_name} | Score = {best_score}")
+print(f"Best Accuracy = {best_score}")
 
 
 # =========================================
-# FINAL PREDICTION (BEST MODEL)
+# FINAL PREDICTION
 # =========================================
 best_model_object.fit(X_train, y_train)
 
-test_predictions = best_model_object.predict(X_test)
-test_predictions = le.inverse_transform(test_predictions)
+test_prob = best_model_object.predict_proba(X_test)[:,1]
+test_predictions = (test_prob > 0.5).astype(int)
 
 submission = pd.DataFrame({
     "Id": test_df["Id"],
-    "PredictedCategory": test_predictions
+    "PredictedCategory": np.where(
+        test_predictions == 0,
+        "NON-CRIMINAL",
+        "CRIMINAL"
+    )
 })
 
 submission.to_csv("submission_out_of_sample.csv", index=False)
