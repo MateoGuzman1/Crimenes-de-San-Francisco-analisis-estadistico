@@ -19,3 +19,7 @@ mlruns/
 .sf-venv/
 .venv/
 *.egg-info/
+
+# Model artifacts (do not commit serialised models)
+models/*.pkl
+models/best_model/
