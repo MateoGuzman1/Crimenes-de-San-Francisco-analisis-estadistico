@@ -12,10 +12,10 @@ _default_model: Any = None
 
 
 def load_default_model() -> Any:
-    """Load the LightGBM binary model from the MLflow backup artifact directory.
+    """Carga el modelo binario LightGBM desde el directorio de artefactos del backup de MLflow.
 
-    The model path is resolved relative to the project root so the package
-    works regardless of the current working directory.
+    La ruta se resuelve relativa a la raíz del proyecto para que el paquete
+    funcione independientemente del directorio de trabajo actual.
     """
     global _default_model
     if _default_model is None:
@@ -24,26 +24,26 @@ def load_default_model() -> Any:
         artifact_path = PROJECT_ROOT / model_cfg["path"]
         if not artifact_path.exists():
             raise FileNotFoundError(
-                f"Default model artifact not found at: {artifact_path}\n"
-                "Ensure MLFLOW_BACKUP/SF-Crimes-Binary/models/LGBM_bin/artifacts "
-                "is present in the project root."
+                f"Artefacto del modelo por defecto no encontrado en: {artifact_path}\n"
+                "Asegúrese de que MLFLOW_BACKUP/SF-Crimes-Binary/models/LGBM_bin/artifacts "
+                "exista en la raíz del proyecto."
             )
         _default_model = mlflow.pyfunc.load_model(str(artifact_path))
     return _default_model
 
 
 def predict(input_df: pd.DataFrame) -> pd.Series:
-    """Run inference with the default LightGBM binary model.
+    """Ejecuta inferencia con el modelo binario LightGBM por defecto.
 
-    Parameters
+    Parámetros
     ----------
     input_df:
-        DataFrame with the same feature columns the model was trained on.
+        DataFrame con las mismas columnas de características usadas en el entrenamiento.
 
-    Returns
+    Retorna
     -------
     pd.Series
-        Binary predictions (0 / 1) for each row.
+        Predicciones binarias (0 / 1) para cada fila.
     """
     model = load_default_model()
     preds = model.predict(input_df)
