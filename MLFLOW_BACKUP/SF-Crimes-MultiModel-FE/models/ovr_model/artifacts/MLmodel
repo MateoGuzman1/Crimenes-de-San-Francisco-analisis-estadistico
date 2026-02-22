@@ -1,0 +1,23 @@
+artifact_path: /home/ubuntu/Crimenes-de-San-Francisco-analisis-estadistico/mlruns/2/models/m-99a92629319e451e9303e712ebe9e859/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.12.3
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+    skops_trusted_types: null
+mlflow_version: 3.10.0
+model_id: m-99a92629319e451e9303e712ebe9e859
+model_size_bytes: 22843
+model_uuid: m-99a92629319e451e9303e712ebe9e859
+prompts: null
+run_id: c3016b03812d47f89ffced1ecc35bf2e
+utc_time_created: '2026-02-21 23:32:26.009291'
