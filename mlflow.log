@@ -491,3 +491,19 @@ INFO:     127.0.0.1:58772 - "POST /ajax-api/2.0/mlflow/runs/search HTTP/1.1" 200
 [2026-02-22 01:38:53,103] INFO:huey:Worker-1:Executing mlflow.server.jobs.utils.online_scoring_scheduler: 1597870e-7b4c-4a82-88b9-f2724a703f14
 2026/02/22 01:38:53 INFO huey: mlflow.server.jobs.utils.online_scoring_scheduler: 1597870e-7b4c-4a82-88b9-f2724a703f14 executed in 0.002s
 [2026-02-22 01:38:53,105] INFO:huey:Worker-1:mlflow.server.jobs.utils.online_scoring_scheduler: 1597870e-7b4c-4a82-88b9-f2724a703f14 executed in 0.002s
+INFO:     127.0.0.1:41514 - "POST /ajax-api/2.0/mlflow/runs/search HTTP/1.1" 200 OK
+2026/02/22 01:39:50 INFO huey.consumer.Scheduler: Enqueueing periodic task mlflow.server.jobs.utils.online_scoring_scheduler: af5b85cc-a325-41f4-be8b-9f5d101b8675.
+[2026-02-22 01:39:50,606] INFO:huey.consumer.Scheduler:Scheduler:Enqueueing periodic task mlflow.server.jobs.utils.online_scoring_scheduler: af5b85cc-a325-41f4-be8b-9f5d101b8675.
+2026/02/22 01:39:50 INFO huey: Executing mlflow.server.jobs.utils.online_scoring_scheduler: af5b85cc-a325-41f4-be8b-9f5d101b8675
+[2026-02-22 01:39:50,825] INFO:huey:Worker-1:Executing mlflow.server.jobs.utils.online_scoring_scheduler: af5b85cc-a325-41f4-be8b-9f5d101b8675
+2026/02/22 01:39:50 INFO huey: mlflow.server.jobs.utils.online_scoring_scheduler: af5b85cc-a325-41f4-be8b-9f5d101b8675 executed in 0.002s
+[2026-02-22 01:39:50,827] INFO:huey:Worker-1:mlflow.server.jobs.utils.online_scoring_scheduler: af5b85cc-a325-41f4-be8b-9f5d101b8675 executed in 0.002s
+INFO:     127.0.0.1:53612 - "POST /ajax-api/2.0/mlflow/runs/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43424 - "POST /ajax-api/2.0/mlflow/runs/search HTTP/1.1" 200 OK
+2026/02/22 01:40:50 INFO huey.consumer.Scheduler: Enqueueing periodic task mlflow.server.jobs.utils.online_scoring_scheduler: 5beea332-3171-40db-a556-f24b63dfed10.
+[2026-02-22 01:40:50,606] INFO:huey.consumer.Scheduler:Scheduler:Enqueueing periodic task mlflow.server.jobs.utils.online_scoring_scheduler: 5beea332-3171-40db-a556-f24b63dfed10.
+INFO:     127.0.0.1:54592 - "POST /ajax-api/2.0/mlflow/runs/search HTTP/1.1" 200 OK
+2026/02/22 01:40:57 INFO huey: Executing mlflow.server.jobs.utils.online_scoring_scheduler: 5beea332-3171-40db-a556-f24b63dfed10
+[2026-02-22 01:40:57,303] INFO:huey:Worker-1:Executing mlflow.server.jobs.utils.online_scoring_scheduler: 5beea332-3171-40db-a556-f24b63dfed10
+2026/02/22 01:40:57 INFO huey: mlflow.server.jobs.utils.online_scoring_scheduler: 5beea332-3171-40db-a556-f24b63dfed10 executed in 0.003s
+[2026-02-22 01:40:57,305] INFO:huey:Worker-1:mlflow.server.jobs.utils.online_scoring_scheduler: 5beea332-3171-40db-a556-f24b63dfed10 executed in 0.003s
