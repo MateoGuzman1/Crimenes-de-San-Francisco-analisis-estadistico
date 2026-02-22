@@ -12,6 +12,8 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
+import xgboost as xgb
+import lightgbm as lgb
 
 import mlflow
 import mlflow.sklearn
@@ -143,29 +145,51 @@ X_test = transform_data(X_test_df)
 # MODELS
 # =========================================
 models = {
-    "LogisticRegression_bin": LogisticRegression(
-        max_iter=1500,
-        solver="liblinear",
-        C=0.7,
-        class_weight="balanced",
+#    "LogisticRegression_bin": LogisticRegression(
+#        max_iter=1500,
+#        solver="liblinear",
+#        C=0.7,
+#        class_weight="balanced",
+#        n_jobs=1
+#    ),
+
+#    "RandomForest_bin": RandomForestClassifier(
+#        n_estimators=150,
+#        max_depth=10,
+#        min_samples_leaf=3,
+#        class_weight="balanced",
+#        n_jobs=1,
+#        random_state=42
+#    ),
+
+ #   "DecisionTree_bin": DecisionTreeClassifier(
+ #       max_depth=12,
+ #       min_samples_leaf=4,
+ #       class_weight="balanced",
+ #       random_state=42
+ #   )  
+
+  "XGBoost_bin": xgb.XGBClassifier(
+        n_estimators=50,
+        max_depth=4,
+        learning_rate=0.1,
+        subsample=0.8,
+        colsample_bytree=0.8,
+        eval_metric="logloss",
+        use_label_encoder=False,
         n_jobs=1
     ),
 
-    "RandomForest_bin": RandomForestClassifier(
-        n_estimators=150,
-        max_depth=10,
-        min_samples_leaf=3,
-        class_weight="balanced",
-        n_jobs=1,
-        random_state=42
-    ),
+    "LightGBM_bin": lgb.LGBMClassifier(
+        n_estimators=50,
+        max_depth=4,
+        learning_rate=0.1,
+        subsample=0.8,
+        colsample_bytree=0.8,
+        n_jobs=1
+    ) 
 
-    "DecisionTree_bin": DecisionTreeClassifier(
-        max_depth=12,
-        min_samples_leaf=4,
-        class_weight="balanced",
-        random_state=42
-    )
+
 }
 
 
