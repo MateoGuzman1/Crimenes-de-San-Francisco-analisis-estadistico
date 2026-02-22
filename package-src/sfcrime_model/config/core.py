@@ -31,6 +31,10 @@ class AppConfig:
     def mlflow(self) -> Dict[str, Any]:
         return self.config.get("mlflow", {})
 
+    @property
+    def model(self) -> Dict[str, Any]:
+        return self.config.get("model", {})
+
 
 def read_yaml_config(path: Path = DEFAULT_CONFIG_PATH) -> AppConfig:
     if not path.exists():

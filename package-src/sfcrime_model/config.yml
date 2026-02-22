@@ -43,3 +43,8 @@ models:
 mlflow:
   tracking_uri: "file:./mlruns"
   experiment_name: "sf-crime-classification"
+
+model:
+  source: mlflow_backup
+  path: MLFLOW_BACKUP/SF-Crimes-Binary/models/LGBM_bin/artifacts
+  type: lightgbm_binary

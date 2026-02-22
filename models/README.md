@@ -30,3 +30,39 @@ its artifact, and writes:
 ```bash
 .venv/bin/mlflow ui --backend-store-uri file:./mlruns
 ```
+
+---
+
+## Using default model from MLflow backup
+
+The package ships with a pre-trained **LightGBM binary classifier** (Jesus's
+best run) stored under:
+
+```
+MLFLOW_BACKUP/SF-Crimes-Binary/models/LGBM_bin/artifacts/
+```
+
+This artifact is registered in `config.yml` under the `model` key and loaded
+automatically by `sfcrime_model.core.load_default_model()`.
+
+### Quick inference
+
+```python
+import pandas as pd
+from sfcrime_model.core import predict
+
+# DataFrame must contain the same feature columns used at training time.
+df = pd.read_csv("data/test.csv")
+predictions = predict(df)
+print(predictions.value_counts())
+```
+
+### How it works
+
+1. `load_default_model()` reads `model.path` from `config.yml`.
+2. The path is resolved relative to the **project root** via `PROJECT_ROOT`,
+   so it works regardless of the current working directory.
+3. `mlflow.pyfunc.load_model()` deserialises the artifact — no MLflow
+   tracking server required (pure local file load).
+4. The loaded model is cached in a module-level variable; subsequent calls to
+   `predict()` reuse it without re-loading from disk.
