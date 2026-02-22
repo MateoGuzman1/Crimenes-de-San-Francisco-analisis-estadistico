@@ -1,31 +1,31 @@
-# Models
+# Modelos
 
-Trained artifacts for the SF Crime classifier.
+Artefactos entrenados para el clasificador de crímenes de San Francisco.
 
-## Workflow
+## Flujo de trabajo
 
-### 1 — Train (3 MLflow runs)
+### 1 — Entrenar (3 corridas de MLflow)
 
 ```bash
-cd <project-root>
+cd <raíz-del-proyecto>
 python3 -m sfcrime_model.train
 ```
 
-Trains `logreg_tfidf`, `linear_svc`, and `mnb` on an 80/20 stratified split
-of `data/train.csv` and logs params + metrics to MLflow.
+Entrena `logreg_tfidf`, `linear_svc` y `mnb` con una división 80/20 estratificada
+de `data/train.csv` y registra parámetros y métricas en MLflow.
 
-### 2 — Export best model
+### 2 — Exportar el mejor modelo
 
 ```bash
 python3 -m sfcrime_model.export_best_model
 ```
 
-Picks the run with the highest `f1_macro` (fallback: `accuracy`), downloads
-its artifact, and writes:
-- `models/best_model/`  — MLflow sklearn model directory
-- `models/best_model.pkl` — joblib pickle (gitignored)
+Selecciona la corrida con el mayor `f1_macro` (alternativa: `accuracy`), descarga
+el artefacto y genera:
+- `models/best_model/`  — directorio de modelo MLflow sklearn
+- `models/best_model.pkl` — pickle joblib (ignorado por git)
 
-### 3 — MLflow UI
+### 3 — Interfaz de MLflow
 
 ```bash
 .venv/bin/mlflow ui --backend-store-uri file:./mlruns
@@ -33,36 +33,36 @@ its artifact, and writes:
 
 ---
 
-## Using default model from MLflow backup
+## Uso del modelo por defecto desde el backup de MLflow
 
-The package ships with a pre-trained **LightGBM binary classifier** (Jesus's
-best run) stored under:
+El paquete incluye un **clasificador binario LightGBM** preentrenado (mejor corrida
+de Jesus) almacenado en:
 
 ```
 MLFLOW_BACKUP/SF-Crimes-Binary/models/LGBM_bin/artifacts/
 ```
 
-This artifact is registered in `config.yml` under the `model` key and loaded
-automatically by `sfcrime_model.core.load_default_model()`.
+Este artefacto está registrado en `config.yml` bajo la clave `model` y se carga
+automáticamente mediante `sfcrime_model.core.load_default_model()`.
 
-### Quick inference
+### Inferencia rápida
 
 ```python
 import pandas as pd
 from sfcrime_model.core import predict
 
-# DataFrame must contain the same feature columns used at training time.
+# El DataFrame debe contener las mismas columnas de características usadas en el entrenamiento.
 df = pd.read_csv("data/test.csv")
-predictions = predict(df)
-print(predictions.value_counts())
+predicciones = predict(df)
+print(predicciones.value_counts())
 ```
 
-### How it works
+### Cómo funciona
 
-1. `load_default_model()` reads `model.path` from `config.yml`.
-2. The path is resolved relative to the **project root** via `PROJECT_ROOT`,
-   so it works regardless of the current working directory.
-3. `mlflow.pyfunc.load_model()` deserialises the artifact — no MLflow
-   tracking server required (pure local file load).
-4. The loaded model is cached in a module-level variable; subsequent calls to
-   `predict()` reuse it without re-loading from disk.
+1. `load_default_model()` lee `model.path` desde `config.yml`.
+2. La ruta se resuelve relativa a la **raíz del proyecto** mediante `PROJECT_ROOT`,
+   por lo que funciona independientemente del directorio de trabajo actual.
+3. `mlflow.pyfunc.load_model()` deserializa el artefacto — no se requiere servidor
+   de seguimiento de MLflow (carga local pura).
+4. El modelo cargado queda en caché en una variable a nivel de módulo; las llamadas
+   posteriores a `predict()` lo reutilizan sin volver a cargarlo desde disco.
