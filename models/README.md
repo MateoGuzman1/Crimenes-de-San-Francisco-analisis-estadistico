@@ -36,7 +36,7 @@ el artefacto y genera:
 ## Uso del modelo por defecto desde el backup de MLflow
 
 El paquete incluye un **clasificador binario LightGBM** preentrenado (mejor corrida
-de Jesus) almacenado en:
+almacenado en:
 
 ```
 MLFLOW_BACKUP/SF-Crimes-Binary/models/LGBM_bin/artifacts/
