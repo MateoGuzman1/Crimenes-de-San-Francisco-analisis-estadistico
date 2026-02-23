@@ -7,9 +7,9 @@ import joblib
 import mlflow
 import mlflow.sklearn
 
-from sfcrime_model.config.core import read_yaml_config
+from sfcrime_model.config.core import PROJECT_ROOT, read_yaml_config
 
-MODELS_DIR = Path("models")
+MODELS_DIR = PROJECT_ROOT / "models"
 BEST_MODEL_DIR = MODELS_DIR / "best_model"
 BEST_MODEL_PKL = MODELS_DIR / "best_model.pkl"
 
