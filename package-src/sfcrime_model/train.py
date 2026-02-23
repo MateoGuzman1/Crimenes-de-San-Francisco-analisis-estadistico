@@ -7,7 +7,7 @@ import pandas as pd
 import mlflow
 import mlflow.sklearn
 
-from sfcrime_model.config.core import read_yaml_config
+from sfcrime_model.config.core import PROJECT_ROOT, read_yaml_config
 from sfcrime_model.processing.data_manager import train_and_eval
 
 
@@ -31,7 +31,7 @@ def main() -> None:
     mlflow.set_tracking_uri(tracking_uri)
     mlflow.set_experiment(exp_name)
 
-    train_df = pd.read_csv("data/train.csv")
+    train_df = pd.read_csv(PROJECT_ROOT / "data" / "train.csv")
 
     model_keys: List[str] = ["logreg_tfidf", "linear_svc", "mnb"]
     results: List[Dict[str, object]] = []
