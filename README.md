@@ -81,7 +81,7 @@ pip install -e .
 
 El remoto DVC usa S3 (`s3://crimen-sf-dvcstore`). Elegir una de estas opciones:
 
-**Opción 1 — IAM Role adjunto a la instancia EC2 (recomendada)**
+**Opción 1 — IAM Role adjunto a la instancia EC2**
 
 No requiere configuración adicional. Verificar con:
 
@@ -108,7 +108,7 @@ export AWS_DEFAULT_REGION=us-east-1
 
 ```bash
 dvc pull
-ls -lh data/train.csv data/test.csv   # ~127 MB y ~87 MB respectivamente
+ls -lh data/train.csv data/test.csv   
 ```
 
 ### E) Ejecutar inferencia con el modelo oficial
@@ -126,7 +126,7 @@ predicciones = predict(df)
 print(predicciones.value_counts())
 ```
 
-### F) (Opcional) Ver experimentos en MLflow UI
+### F) Ver experimentos en MLflow UI
 
 ```bash
 # Backend de archivos
@@ -141,16 +141,16 @@ Disponible en `http://<ip-ec2>:5000`
 
 ---
 
-## Entrenamiento (experimental)
+## Entrenamiento 
 
 Entrena tres modelos (`logreg_tfidf`, `linear_svc`, `mnb`) y registra cada run en MLflow.
-**No es necesario para reproducir el modelo oficial.**
+**No es necesario para reproducir el modelo default.**
 
 ```bash
 python -m sfcrime_model.train
 ```
 
-## Exportar el mejor modelo (experimental)
+## Exportar el mejor modelo 
 
 Selecciona el run con mayor `f1_macro` del experimento MLflow activo y lo serializa en `models/`.
 
