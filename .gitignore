@@ -20,6 +20,22 @@ mlruns/
 .venv/
 *.egg-info/
 
-# Model artifacts (do not commit serialised models)
+# Model artifacts legacy (carpeta models/ anterior)
 models/*.pkl
 models/best_model/
+
+# Modelo entrenado (demasiado grande para git — generar con train_pipeline)
+package-src/sfcrime_model/trained/*.pkl
+package-src/sfcrime_model/trained/label_classes.npy
+
+# Artefacto del modelo XGBoost en MLFLOW_BACKUP (demasiado grande para git)
+MLFLOW_BACKUP/SF-Crimes-MultiModel-FE/models/Xgboost/artifacts/model.pkl
+
+# Logs y archivos temporales locales
+*.log
+salida.log
+mlflow.db
+submission_out_of_sample.csv
+
+# Variables de entorno locales
+dashboard/.env

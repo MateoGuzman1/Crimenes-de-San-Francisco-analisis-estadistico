@@ -1,50 +1,25 @@
-project:
-  random_seed: 42
-  target: "Category"
-  datetime_col: "Dates"
-  split:
-    type: "temporal"
-    cutoff: "2015-04-01"   # placeholder: lo ajustamos con EDA
+package_name: sfcrime-model
 
-features:
-  categorical:
-    - "DayOfWeek"
-    - "PdDistrict"
-  numeric:
-    - "X"
-    - "Y"
-  text:
-    - "Address"
+train_data_file: train.csv
+test_data_file: test.csv
 
-models:
-  baseline_logreg:
-    enabled: true
-    params:
-      max_iter: 200
-      n_jobs: -1
-      solver: "saga"
-      multi_class: "multinomial"
+pipeline_save_file: sfcrime-model-output
 
-  random_forest:
-    enabled: true
-    params:
-      n_estimators: 300
-      max_depth: null
-      n_jobs: -1
-      random_state: 42
+target: Category
 
-  hist_gb:
-    enabled: true
-    params:
-      max_depth: null
-      learning_rate: 0.1
-      random_state: 42
+drop_cols:
+  - Descript
+  - Resolution
 
-mlflow:
-  tracking_uri: "file:./mlruns"
-  experiment_name: "sf-crime-classification"
+test_size: 0.2
+random_state: 42
 
-model:
-  source: mlflow_backup
-  path: MLFLOW_BACKUP/SF-Crimes-Binary/models/LGBM_bin/artifacts
-  type: lightgbm_binary
+n_estimators: 100
+max_depth: 4
+learning_rate: 0.1
+subsample: 0.8
+colsample_bytree: 0.8
+num_classes: 39
+
+mlflow_tracking_uri: "file:./mlruns"
+mlflow_experiment_name: "sf-crime-classification"

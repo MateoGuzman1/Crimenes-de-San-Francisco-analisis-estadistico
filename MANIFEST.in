@@ -1,0 +1,18 @@
+include *.txt
+include *.md
+
+recursive-include package-src/sfcrime_model *
+
+include package-src/sfcrime_model/VERSION
+include package-src/sfcrime_model/config.yml
+include package-src/sfcrime_model/trained/*.pkl
+include package-src/sfcrime_model/trained/label_classes.npy
+
+include requirements/requirements.txt
+include requirements/test_requirements.txt
+
+exclude *.log
+exclude *.cfg
+
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
