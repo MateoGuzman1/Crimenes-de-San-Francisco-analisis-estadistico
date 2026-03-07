@@ -24,7 +24,6 @@ mlruns/
 models/*.pkl
 models/best_model/
 
-
 # Modelo entrenado (demasiado grande para git — generar con train_pipeline)
 package-src/sfcrime_model/trained/*.pkl
 package-src/sfcrime_model/trained/label_classes.npy
@@ -39,9 +38,11 @@ mlflow.db
 submission_out_of_sample.csv
 
 # Variables de entorno locales
-dashboard/.env
+ui/.env
+.env
 
-#llaves aws
+# Archivos temporales del editor
+*.ori
+
+# Llaves AWS
 *.pem
-
-====
