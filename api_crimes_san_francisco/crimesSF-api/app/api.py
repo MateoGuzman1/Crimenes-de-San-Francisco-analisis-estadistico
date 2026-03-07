@@ -6,9 +6,18 @@ import pandas as pd
 from fastapi import APIRouter, HTTPException
 from fastapi.encoders import jsonable_encoder
 from loguru import logger
-from model import __version__ as model_version
-from sfcrime_model.predict import make_prediction
 
+# Cargar el pickle del modelo al iniciar la API
+import pickle
+import os
+
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "../sfcrime_model/model.pkl")
+with open(MODEL_PATH, "rb") as f:
+    model = pickle.load(f)
+
+model_version = getattr(model, "__version__", "pkl-model")  # mantiene compatibilidad
+
+from sfcrime_model.predict import make_prediction
 from app import __version__, schemas
 from app.config import settings
 
