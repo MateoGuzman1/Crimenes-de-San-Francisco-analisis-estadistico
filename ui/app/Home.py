@@ -7,13 +7,14 @@ from components.map_selector import render_clickable_map
 from settings import MOCK_MODE, API_URL
 
 from predictor.mock_predictor import mock_predict
+from predictor.local_model import predict_local
 from predictor.api_client import api_predict
 
 
 def predict(payload: dict) -> dict:
     if MOCK_MODE:
         return mock_predict(payload)
-    return api_predict(API_URL, payload)
+    return predict_local(payload)
 
 
 def main():
@@ -21,6 +22,7 @@ def main():
 
     st.title("Clasificador de crimen - SF")
     st.write("Predicción del tipo de crimen en San Francisco")
+    st.write(f"MOCK_MODE actual: {MOCK_MODE}")
 
     col_left, col_right = st.columns([1, 1])
 
