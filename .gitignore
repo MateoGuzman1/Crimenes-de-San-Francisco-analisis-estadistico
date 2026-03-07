@@ -21,6 +21,11 @@ mlruns/
 *.egg-info/
 
 # Model artifacts (do not commit serialised models)
+models/
 models/*.pkl
 models/best_model/
 MLFLOW_BACKUP/SF-Crimes-MultiModel-FE/models/Xgboost/artifacts/model.pkl
+
+*.ori
+test_*.py
+.env
