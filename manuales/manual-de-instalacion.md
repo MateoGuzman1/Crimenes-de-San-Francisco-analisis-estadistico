@@ -171,3 +171,99 @@ pip install -r requirements/test_requirements.txt
 pytest tests/
 ```
 
+---
+
+## Despliegue con Docker en EC2
+
+El sistema se puede desplegar completo (API + tablero) usando Docker Compose. Esta sección describe el proceso paso a paso.
+
+### Prerequisitos en la VM
+
+- Ubuntu 22.04, t2.medium, 30 GB de almacenamiento
+- Puertos abiertos en el Security Group: 22 (SSH), 8001 (API), 8501 (UI)
+- Docker y docker-compose instalados:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y docker.io docker-compose
+sudo usermod -aG docker ubuntu
+newgrp docker
+```
+
+### A) Entrenar el modelo localmente (Mac/Linux)
+
+El modelo no está versionado en git por su tamaño (≈110 MB). Se genera localmente con:
+
+```bash
+cd <raiz-del-repo>
+PYTHONPATH=package-src python3 -m sfcrime_model.train_xgboost_pipeline \
+  --out-pkl MLFLOW_BACKUP/SF-Crimes-MultiModel-FE/models/Xgboost/artifacts/model.pkl \
+  --out-classes MLFLOW_BACKUP/SF-Crimes-MultiModel-FE/models/Xgboost/artifacts/classes.json
+```
+
+Luego copiar los artefactos al directorio de la API:
+
+```bash
+cp MLFLOW_BACKUP/SF-Crimes-MultiModel-FE/models/Xgboost/artifacts/model.pkl \
+   api_crimes_san_francisco/crimesSF-api/model-pkg/model.pkl
+
+cp MLFLOW_BACKUP/SF-Crimes-MultiModel-FE/models/Xgboost/artifacts/classes.json \
+   api_crimes_san_francisco/crimesSF-api/model-pkg/classes.json
+```
+
+### B) Clonar el repositorio en la VM
+
+```bash
+git clone -b docker-despliegue https://github.com/MateoGuzman1/Crimenes-de-San-Francisco-analisis-estadistico.git
+cd Crimenes-de-San-Francisco-analisis-estadistico
+```
+
+### C) Crear carpetas para los artefactos
+
+```bash
+mkdir -p api_crimes_san_francisco/crimesSF-api/model-pkg
+mkdir -p MLFLOW_BACKUP/SF-Crimes-MultiModel-FE/models/Xgboost/artifacts
+```
+
+### D) Enviar los artefactos a la VM por SCP
+
+Desde la máquina local (reemplazar `<pem>` e `<IP>`):
+
+```bash
+scp -i <pem> api_crimes_san_francisco/crimesSF-api/model-pkg/model.pkl \
+  ubuntu@<IP>:~/Crimenes-de-San-Francisco-analisis-estadistico/api_crimes_san_francisco/crimesSF-api/model-pkg/model.pkl
+
+scp -i <pem> api_crimes_san_francisco/crimesSF-api/model-pkg/classes.json \
+  ubuntu@<IP>:~/Crimenes-de-San-Francisco-analisis-estadistico/api_crimes_san_francisco/crimesSF-api/model-pkg/classes.json
+```
+
+### E) Levantar los servicios
+
+```bash
+docker-compose up --build -d
+docker-compose ps
+```
+
+Ambos servicios deben aparecer en estado `Up`.
+
+### F) Acceder al tablero
+
+```
+http://<IP-publica-de-la-VM>:8501
+```
+
+La API está disponible en:
+
+```
+http://<IP-publica-de-la-VM>:8001/docs
+```
+
+### Nota sobre AWS Academy
+
+Las instancias de AWS Academy asignan una IP pública nueva cada vez que se reinicia la instancia. Al volver a usarla:
+
+1. Verificar la nueva IP en EC2 → Instances → Public IPv4 address
+2. Conectarse por SSH con esa IP
+3. Levantar los contenedores si están parados: `docker-compose up -d`
+4. Compartir la nueva IP a los usuarios
+
