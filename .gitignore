@@ -31,6 +31,9 @@ package-src/sfcrime_model/trained/label_classes.npy
 # Artefacto del modelo XGBoost en MLFLOW_BACKUP (demasiado grande para git)
 MLFLOW_BACKUP/SF-Crimes-MultiModel-FE/models/Xgboost/artifacts/model.pkl
 
+# Modelo en la API (se copia manualmente o por SCP, demasiado grande para git)
+api_crimes_san_francisco/crimesSF-api/model-pkg/model.pkl
+
 # Logs y archivos temporales locales
 *.log
 salida.log
