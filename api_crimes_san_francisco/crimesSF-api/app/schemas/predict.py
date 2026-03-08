@@ -61,7 +61,7 @@ class PredictionResults(BaseModel):
 
 MODEL_PATH = os.path.join(
     os.path.dirname(__file__),
-    "../model-pkg/modelo.pkl"
+    "../../model-pkg/model.pkl"
 )
 
 with open(MODEL_PATH, "rb") as f:
