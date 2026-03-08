@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8001:8001"
+    volumes:
+      - ./api_crimes_san_francisco/crimesSF-api/model-pkg/model.pkl:/opt/crimessf-api/model-pkg/model.pkl
     restart: unless-stopped
 
   ui:
