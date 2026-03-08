@@ -1,20 +1,24 @@
 import json
+import time
 from typing import Any
 
+import joblib
 import numpy as np
+import os
 import pandas as pd
 from fastapi import APIRouter, HTTPException
 from fastapi.encoders import jsonable_encoder
 from loguru import logger
 
-# Cargar el pickle del modelo al iniciar la API
-import joblib
-import os
-
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "../model-pkg/model.pkl")
+CLASSES_PATH = os.path.join(os.path.dirname(__file__), "../model-pkg/classes.json")
+
 model = joblib.load(MODEL_PATH)
 
-model_version = getattr(model, "__version__", "pkl-model")  # mantiene compatibilidad
+with open(CLASSES_PATH, encoding="utf-8") as f:
+    classes = json.load(f)
+
+model_version = getattr(model, "__version__", "pkl-model")
 
 from app import __version__, schemas
 from app.config import settings
@@ -22,35 +26,46 @@ from app.config import settings
 api_router = APIRouter()
 
 
-# Función de predicción usando el modelo cargado directamente
-def make_prediction(input_data: pd.DataFrame) -> dict:
-    try:
-        preds = model.predict(input_data)  # usa el modelo cargado
-        return {"predictions": preds.tolist(), "errors": None}
-    except Exception as e:
-        return {"predictions": None, "errors": str(e)}
+def _transform(df: pd.DataFrame) -> pd.DataFrame:
+    out = pd.DataFrame()
+    out["DayOfWeek"] = pd.to_datetime(df["fecha"]).dt.day_name()
+    out["Hour"] = df["hora"].astype(int)
+    out["PdDistrict"] = df["distrito"].str.upper()
+    out["X"] = df["longitud"].astype(float)
+    out["Y"] = df["latitud"].astype(float)
+    return out
 
 
-# Ruta para verificar que la API se esté ejecutando correctamente
 @api_router.get("/health", response_model=schemas.Health, status_code=200)
 def health() -> dict:
-    health = schemas.Health(
+    h = schemas.Health(
         name=settings.PROJECT_NAME, api_version=__version__, model_version=model_version
     )
-    return health.dict()
+    return h.dict()
 
 
-# Ruta para realizar las predicciones
 @api_router.post("/predict", response_model=schemas.PredictionResults, status_code=200)
 async def predict(input_data: schemas.MultipleDataInputs) -> Any:
+    start = time.time()
     input_df = pd.DataFrame(jsonable_encoder(input_data.inputs))
+    logger.info(f"Received inputs: {input_data.inputs}")
 
-    logger.info(f"Making prediction on inputs: {input_data.inputs}")
-    results = make_prediction(input_data=input_df.replace({np.nan: None}))
+    try:
+        features = _transform(input_df)
+        preds = model.predict(features)
+        probas = model.predict_proba(features).max(axis=1)
+    except Exception as e:
+        logger.error(f"Prediction error: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
 
-    if results["errors"] is not None:
-        logger.warning(f"Prediction validation error: {results.get('errors')}")
-        raise HTTPException(status_code=400, detail=json.loads(results["errors"]))
+    crime = classes[int(preds[0])]
+    prob = float(probas[0])
+    latency = (time.time() - start) * 1000
 
-    logger.info(f"Prediction results: {results.get('predictions')}")
-    return results
+    logger.info(f"Predicted: {crime} ({prob:.4f})")
+    return {
+        "crimen_predicho": crime,
+        "probabilidad": prob,
+        "latency_ms": latency,
+        "note": "Resultado generado por API XGBoost",
+    }
