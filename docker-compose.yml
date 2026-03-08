@@ -1,0 +1,10 @@
+services:
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      - MOCK_MODE=true
+    restart: unless-stopped
