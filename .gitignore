@@ -28,6 +28,9 @@ models/best_model/
 package-src/sfcrime_model/trained/*.pkl
 package-src/sfcrime_model/trained/label_classes.npy
 
+# Artefactos MLflow locales del modelo XGBoost (demasiado grandes para git)
+models/best_model_xgb/
+
 # Artefacto del modelo XGBoost en MLFLOW_BACKUP (demasiado grande para git)
 MLFLOW_BACKUP/SF-Crimes-MultiModel-FE/models/Xgboost/artifacts/model.pkl
 
