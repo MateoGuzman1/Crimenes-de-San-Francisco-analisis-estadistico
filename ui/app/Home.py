@@ -14,7 +14,7 @@ from predictor.api_client import api_predict
 def predict(payload: dict) -> dict:
     if MOCK_MODE:
         return mock_predict(payload)
-    return predict_local(payload)
+    return api_predict(payload)
 
 
 def main():

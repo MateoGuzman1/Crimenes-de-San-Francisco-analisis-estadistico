@@ -15,7 +15,10 @@ services:
     ports:
       - "8501:8501"
     environment:
-      - MOCK_MODE=true
+      - MOCK_MODE=false
+    volumes:
+      - ./api_crimes_san_francisco/crimesSF-api/model-pkg/model.pkl:/opt/MLFLOW_BACKUP/SF-Crimes-MultiModel-FE/models/Xgboost/artifacts/model.pkl
+      - ./MLFLOW_BACKUP/SF-Crimes-MultiModel-FE/models/Xgboost/artifacts/classes.json:/opt/MLFLOW_BACKUP/SF-Crimes-MultiModel-FE/models/Xgboost/artifacts/classes.json
     depends_on:
       - api
     restart: unless-stopped

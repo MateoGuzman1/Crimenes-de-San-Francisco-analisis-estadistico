@@ -5,7 +5,7 @@ RUN adduser --disabled-password --gecos '' api-user
 WORKDIR /opt/crimessf-api
 
 # Copiar solo el contenido del API
-COPY . /opt/crimessf-api/
+COPY crimesSF-api/ /opt/crimessf-api/
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
