@@ -32,7 +32,7 @@ def predict_local(payload: dict) -> dict:
         "X": float(payload["longitud"]),
         "Y": float(payload["latitud"]),
     }])
-
+    
     pred_idx = int(model.predict(X)[0])
     probs = model.predict_proba(X)[0]
     prob = float(probs[pred_idx])
