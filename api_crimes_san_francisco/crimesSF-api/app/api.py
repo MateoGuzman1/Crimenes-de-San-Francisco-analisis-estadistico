@@ -8,12 +8,11 @@ from fastapi.encoders import jsonable_encoder
 from loguru import logger
 
 # Cargar el pickle del modelo al iniciar la API
-import pickle
+import joblib
 import os
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "../model-pkg/model.pkl")
-with open(MODEL_PATH, "rb") as f:
-    model = pickle.load(f)
+model = joblib.load(MODEL_PATH)
 
 model_version = getattr(model, "__version__", "pkl-model")  # mantiene compatibilidad
 
